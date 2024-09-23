@@ -1,0 +1,10 @@
+extra-streamlit-components
+streamlit
+streamlit-authenticator
+pillow
+image
+scikit-learn
+pandas
+matplotlib
+matplotlib-inline
+seaborn

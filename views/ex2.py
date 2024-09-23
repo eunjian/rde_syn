@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 import pandas as pd
+from views import ex3
 
 def createPage():
     st.header('학습 모델 조회')
@@ -17,7 +18,10 @@ def createPage():
     with c3:
         st.selectbox('알고리즘', ['전체'])
         _,b= st.columns([5,1])
-        b.button('조회', type='primary')
+        click = b.button('조회', type='primary')
+        
+    if click:
+        ex3.createPage()
         
     st.subheader('학습 모델 목록')
     container2 = st.container(border=True)
