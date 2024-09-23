@@ -1,6 +1,7 @@
 extra-streamlit-components
 streamlit
 streamlit-authenticator
+streamlit_option_menu
 pillow
 image
 scikit-learn
