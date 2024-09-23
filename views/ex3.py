@@ -38,7 +38,8 @@ def createPage():
     with col2:
         st.button('텐서보드',type='primary')
     with col3:
-        action = st.button('실행',type='primary')
+        if st.button('실행',type='primary'):
+            st.toast('학습이 완료되었습니다.')
     with col4:
         st.button('중단',type='primary')
     with col5:
@@ -46,6 +47,4 @@ def createPage():
     with col6:
         st.button('삭제',type='primary')
         
-    if action:
-        st.toast('학습이 완료되었습니다.')
     return True
