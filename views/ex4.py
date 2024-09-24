@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
 
+    
 def createPage():
+    ds_dict = {}
     t1, t2 = st.tabs(['원천데이터 업로드', '데이터셋 관리'])
     
     with t1:    
@@ -20,10 +22,8 @@ def createPage():
             df = pd.read_csv(uploaded_file)
             col, row = df.shape
             st.write(f'데이터셋의 크기: {col}열, {row}행')
-            
             st.write(df.head(20))
         else:
             st.info('☝️ 파일을 업로드하세요')
-        
-    
+            
     return True

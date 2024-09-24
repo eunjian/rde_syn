@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-from views import ex1, ex2, ex4
+from views import ex1, ex2, ex4, ex5, ex6
 
 st.set_page_config(layout="wide")
 
@@ -25,3 +25,9 @@ if choice == '학습 모델 조회':
   
 if choice == '데이터수집':
   ex4.createPage()
+  
+if choice == '전처리':
+  ex5.createPage()
+  
+if choice == '후처리':
+  ex6.createPage()

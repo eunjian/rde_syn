@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_option_menu import option_menu
 
 def createPage():
     st.header('학습 모델 설계')
