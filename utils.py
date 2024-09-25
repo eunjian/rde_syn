@@ -9,7 +9,7 @@ from process.preprocess import Preprocess
 from process.postprocess import Postprocess
 from synthpop import Synthpop
 
-# 초기화
+# __init__
 CURRENT_PATH = os.curdir + '/'
 ORIGINAL_PATH = 'original_data'
 PREPROCESS_PATH = 'preprocess_config'
@@ -41,21 +41,22 @@ def randstrings():
 
 # 원천데이터 셋 등록
 def id01_01_01(
-    original_data_path:str,
+    file,
     original_data_name:str,
 ):
     while True:
         folder_name = randstrings()
         if folder_name not in os.listdir(ORIGINAL_PATH):
             break
-    os.mkdir(ORIGINAL_PATH + '/' + folder_name)
-    shutil.move(original_data_path, ORIGINAL_PATH + '/' + folder_name)
+    os.mkdir(os.path.join(ORIGINAL_PATH, folder_name))
+    with open(os.path.join(ORIGINAL_PATH, folder_name, file.name), 'wb') as f:
+        f.write(file.getbuffer())
     config_yaml = dict()
     config_yaml['ID'] = folder_name
-    config_yaml['데이터경로'] = os.path.split(original_data_path)[-1]
+    config_yaml['데이터경로'] = os.path.join(ORIGINAL_PATH, folder_name, file.name)
     config_yaml['데이터셋명'] = original_data_name
-    with open(ORIGINAL_PATH + '/' + folder_name + '/config.yaml', 'w') as file:
-        yaml.dump(config_yaml, file)
+    with open(ORIGINAL_PATH + '/' + folder_name + '/config.yaml', 'w') as f:
+        yaml.dump(config_yaml, f)
 
 def id01_02_01():
     pass
@@ -93,23 +94,23 @@ def id01_03_03():
 
 # 전처리 함수 저장
 def id02_01_01(
-    args,
+    preprocess_list:list,
     preprocess_name:str=None,
 ):
     while True:
-        file_name = randstrings() + '.yaml'
+        file_name = randstrings()
         if file_name not in os.listdir(PREPROCESS_PATH):
             break
-    os.mkdir(PREPROCESS_PATH + '/' + file_name)
     config_yaml = dict()
-    config_yaml['ID'] = file_name.rstrip('.yaml')
+    config_yaml['ID'] = file_name
     if preprocess_name:
         config_yaml['전처리명'] = preprocess_name
     else:
         config_yaml['전처리명'] = '전처리_' + str(len(os.listdir(PREPROCESS_PATH)) + 1)
-    for process, columns in args.items():
-        config_yaml[process] = columns
-    with open(PREPROCESS_PATH + file_name, 'w') as file:
+    # for process, columns in args.items():
+    #     config_yaml[process] = columns
+    config_yaml['전처리과정'] = preprocess_list
+    with open(os.path.join(PREPROCESS_PATH, file_name + '.yaml'), 'w') as file:
         yaml.dump(config_yaml, file)
 
 def id02_01_02():
@@ -123,12 +124,12 @@ def id02_02_02():
 
 # 전처리 목록 조회
 def id02_03_01():
-    config_path_list = glob.glob()
+    config_path_list = os.listdir(f'./{PREPROCESS_PATH}')
     preprocess_name_list = list()
     for config_path in config_path_list:
-        with open(config_path) as file:
+        with open(os.path.join(PREPROCESS_PATH, config_path)) as file:
             data = yaml.load(file, Loader=yaml.FullLoader)
-            preprocess_name_list.append(data['전처리명'])
+            preprocess_name_list.append(data)
     return preprocess_name_list
 
 def id02_03_02():
@@ -146,7 +147,7 @@ def id03_01_01():
     model_config_list = list()
     for folder in model_list:
         try:
-            with open(os.path.join(CURRENT_PATH, MODEL_PATH, folder, 'config.yaml')) as file:
+            with open(os.path.join(CURRENT_PATH, MODEL_PATH, folder, 'config.yaml'), encoding='utf-8') as file:
                 data = yaml.load(file, Loader=yaml.FullLoader)
             model_config_list.append(data)
         except:
@@ -169,6 +170,13 @@ def id03_01_02(
         learning_rate:str,
         dropout:str,
         epochs:str,
+        #######################
+        preprocess_name,
+        postprocess_name,
+        integer_cols,
+        float_cols,
+        category_cols,
+        #######################
         category:str='기업CB합성',
         user:str='admin',
         start_time:str='-',
@@ -187,7 +195,7 @@ def id03_01_02(
     config_yaml['카테고리'] = category
     config_yaml['알고리즘'] = algorithm
     config_yaml['학습명'] = model_name
-    config_yaml['데이터셋명'] = ds_name
+    config_yaml['데이터셋ID'] = ds_name
     config_yaml['학습셋길이'] = train_length
     config_yaml['테스트셋길이'] = test_length
     config_yaml['이전학습'] = previous_train
@@ -204,6 +212,11 @@ def id03_01_02(
     config_yaml['learning-rate'] = learning_rate
     config_yaml['dropout'] = dropout
     config_yaml['epochs'] = epochs
+    config_yaml['전처리ID'] = preprocess_name
+    config_yaml['후처리ID'] = postprocess_name
+    config_yaml['integer_cols'] = integer_cols
+    config_yaml['float_cols'] = float_cols
+    config_yaml['category_cols'] = category_cols
     with open(MODEL_PATH + '/' + folder_name + '/config.yaml', 'w') as file:
         yaml.dump(config_yaml, file)
     return True
@@ -214,11 +227,34 @@ def id03_01_03():
 def id03_01_04(model_name:str):
     pass
 
+# 후처리 목록 조회
 def id04_01_01():
-    pass
+    config_path_list = os.listdir(f'./{POSTPROCESS_PATH}')
+    preprocess_name_list = list()
+    for config_path in config_path_list:
+        with open(os.path.join(POSTPROCESS_PATH, config_path)) as file:
+            data = yaml.load(file, Loader=yaml.FullLoader)
+            preprocess_name_list.append(data)
+    return preprocess_name_list
 
-def id04_01_02():
-    pass
+# 후처리 등록
+def id04_01_02(
+    postprocess_list:list,
+    postprocess_name:str=None,
+):
+    while True:
+        file_name = randstrings()
+        if file_name not in os.listdir(POSTPROCESS_PATH):
+            break
+    config_yaml = dict()
+    config_yaml['ID'] = file_name
+    if postprocess_name:
+        config_yaml['후처리명'] = postprocess_name
+    else:
+        config_yaml['후처리명'] = '전처리_' + str(len(os.listdir(POSTPROCESS_PATH)) + 1)
+    config_yaml['후처리과정'] = postprocess_list
+    with open(os.path.join(POSTPROCESS_PATH, file_name + '.yaml'), 'w') as file:
+        yaml.dump(config_yaml, file)
 
 def id04_01_03():
     pass

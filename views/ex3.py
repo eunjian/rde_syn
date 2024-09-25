@@ -3,7 +3,8 @@ import streamlit as st
 def createPage():
     st.header('학습 모델 상세정보')
     
-    container = st.container(border=True)
+    container = st.container()
+    # container = st.container(border=True)
     container.subheader('학습 기본 정보')
     c1, c2 = container.columns(2)
     with c1:
@@ -17,7 +18,8 @@ def createPage():
         with sub_c2:
             st.button('변경', type='primary')
     
-    container2 = st.container(border=True)
+    container2 = st.container()
+    # container2 = st.container(border=True)
     container2.subheader('학습 모델 정보')
     t1,t2, t3, t4 = container2.tabs(['공통 파라미터', '알고리즘 파라미터','Neural Network', '학습상태'])
     with t4:

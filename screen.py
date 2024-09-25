@@ -1,12 +1,12 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-from views import ex1, ex2, ex4
+from views import ex1, ex2, ex4, ex5, ex6, ex7
 
 st.set_page_config(layout="wide")
 
 with st.sidebar:
     st.image('photo_2024-09-20_16-27-37.jpg')
-    choice = option_menu("합성데이터 솔루션", ["Home", "데이터수집", "전처리", "후처리", "학습 모델 설계", "학습 모델 조회"],
+    choice = option_menu("합성데이터 솔루션", ["Home", "데이터수집", "전처리", "후처리", "학습 모델 설계", "학습 모델 조회", "결과 분석"],
                          icons=['house','database-add','file-earmark-bar-graph', 'file-earmark-bar-graph-fill', 'bi bi-robot', 'search-heart'],
                          menu_icon="clipboard2-data", default_index=0,
                          styles={
@@ -25,3 +25,12 @@ if choice == '학습 모델 조회':
   
 if choice == '데이터수집':
   ex4.createPage()
+  
+if choice == '전처리':
+  ex5.createPage()
+  
+if choice == '후처리':
+  ex6.createPage()
+
+if choice == '결과 분석':
+  ex7.createPage()

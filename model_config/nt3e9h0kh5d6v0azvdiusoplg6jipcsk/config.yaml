@@ -1,22 +1,21 @@
+번호: 2
+카테고리: 기업CB합성
+알고리즘: CTAB_GAN+
+학습명: 기업CB_합성데이터셋생성 v1.1
+데이터셋ID: q0ssc4wgdfxp0jkcoa25h6afnh4asdfz
+학습셋길이: 6000
+테스트셋길이: 1000
+이전학습: ''
+등록자: admin
+수행시작일자: '2019-01-17 00:19:35'
+수행종료일시: '2019-01-17 00:19:48'
+결과(Accuracy): 0.8025
+상태: 정상종료
+공개범위: 전체공개
+초기화방법: Xavier uniform
+최적화방법: Adam
+자동저장주기: 50
+배치사이즈: 0
+learning-rate: 0.01
 dropout: 0.1
 epochs: 50
-learning-rate: 0.01
-"\uACB0\uACFC(Accuracy)": 0.8025
-"\uACF5\uAC1C\uBC94\uC704": "\uC804\uCCB4\uACF5\uAC1C"
-"\uB370\uC774\uD130\uC14B\uBA85": Corp_CB_Dataset_2024
-"\uB4F1\uB85D\uC790": admin
-"\uBC30\uCE58\uC0AC\uC774\uC988": 0
-"\uBC88\uD638": 2
-"\uC0C1\uD0DC": "\uC815\uC0C1\uC885\uB8CC"
-"\uC218\uD589\uC2DC\uC791\uC77C\uC790": '2019-01-17 00:19:35'
-"\uC218\uD589\uC885\uB8CC\uC77C\uC2DC": '2019-01-17 00:19:48'
-"\uC54C\uACE0\uB9AC\uC998": CTAB_GAN+
-"\uC774\uC804\uD559\uC2B5": ''
-"\uC790\uB3D9\uC800\uC7A5\uC8FC\uAE30": 50
-"\uCD08\uAE30\uD654\uBC29\uBC95": Xavier uniform
-"\uCD5C\uC801\uD654\uBC29\uBC95": Adam
-"\uCE74\uD14C\uACE0\uB9AC": "\uAE30\uC5C5CB\uD569\uC131"
-"\uD14C\uC2A4\uD2B8\uC14B\uAE38\uC774": 1000
-"\uD559\uC2B5\uBA85": "\uAE30\uC5C5CB_\uD569\uC131\uB370\uC774\uD130\uC14B\uC0DD\uC131\
-  \ v1.1"
-"\uD559\uC2B5\uC14B\uAE38\uC774": 6000
