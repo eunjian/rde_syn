@@ -22,8 +22,8 @@ def createPage():
     if submit:
         id02_01_01(selects, name)
     
-    container = st.container()
-    # container = st.container(border=True)
+    # container = st.container()
+    container = st.container(border=True)
     container.subheader('저장된 전처리 리스트')
     # preprocess_list = open('./preprocess_list.txt','r')
     # lines = preprocess_list.readlines()

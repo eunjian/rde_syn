@@ -29,7 +29,8 @@ class Postprocess():
     """
     def __init__(self, synthetic_data_path='output/df_fake_unique_post_op.csv', df_ordernum_bsdt_path='output/df_ordernum_bsdt.csv',
                  f_rate_path='meta/convert_f_rates.json', meta_path='meta/meta_기업CB.json'):
-        self.df_fake = pd.read_csv(synthetic_data_path)
+        # self.df_fake = pd.read_csv(synthetic_data_path)
+        self.df_fake = synthetic_data_path
         self.df_ordernum_bsdt = pd.read_csv(df_ordernum_bsdt_path)
         with open(f_rate_path, "r") as f:
             self.f_info = json.load(f)
@@ -52,9 +53,8 @@ class Postprocess():
             정렬된 합성데이터 저장 경로.
         """
         self.df_fake_unique_sorted = self.df_fake.sort_values(by = sort_by_cols, ascending = False).reset_index(drop = True)
-        # self.df_fake_unique_sorted.to_csv(df_fake_unique_sorted_path, index = False, encoding = 'utf-8-sig')
     
-    def C_POST_002(self, date_key_col='기준년월', df_fake_augmented_path='output/df_real_unique.csv'):
+    def C_POST_002(self, date_key_col='기준년월'):
         """
         원천데이터의 row 길이만큼 합성데이터의 길이 복원 및 기준년월 부여.
         
@@ -68,7 +68,6 @@ class Postprocess():
         self.df_fake_unique_sorted = self.df_fake_unique_sorted.iloc[(self.df_ordernum_bsdt['order_num'] - 1).to_list(), :].reset_index(drop = True)
         self.df_fake_unique_sorted[date_key_col] = self.df_ordernum_bsdt[date_key_col]
         self.df_fake_augmented = self.df_fake_unique_sorted.copy()
-        # self.df_fake_augmented.to_csv(df_fake_augmented_path, index = False, encoding = 'utf-8-sig')
         
     def C_POST_003(self, start_date_col='상장일자', end_date_col='상장폐지일자'):
         """
@@ -133,7 +132,7 @@ class Postprocess():
             self.df_fake_augmented[col] = self.df_fake_augmented[col].apply(lambda x: prop_repository.pop() if x == "F" else x)
             self.df_fake_augmented[col] = self.df_fake_augmented[col].astype(int)
     
-    def C_POST_008(self, df_fake_completed_path='output/df_fake_completed.csv'):
+    def C_POST_008(self):
         """
         가명식별자(3배수의 데이터가 생성완료된 후 복원)를 제외한 데이터의 컬럼순서 정렬 및 저장.
         
@@ -144,6 +143,11 @@ class Postprocess():
         """
         self.df_fake_completed = self.df_fake_augmented.copy()
         col_sort_list = list(self.meta_items.keys())
-        col_sort_list.remove("가명식별자")
+        # col_sort_list.remove("가명식별자")
+        self.df_fake_completed["가명식별자"] = list(self.df_fake_completed.index)
         self.df_fake_completed = self.df_fake_completed[col_sort_list]
-        self.df_fake_completed.to_csv(df_fake_completed_path, index = False, encoding = 'utf-8')
+        
+        # rename_dict = {col : self.meta_items[col]['code'] for col in self.meta_items}
+        # self.df_fake_completed = self.df_fake_augmented.rename(rename_dict)
+        # self.df_fake_completed.to_csv(df_fake_completed_path, index = False, encoding = 'utf-8')
+        

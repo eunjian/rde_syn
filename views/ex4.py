@@ -18,6 +18,7 @@ def createPage():
                 st.write('')
                 st.write('')
                 if st.button('저장', type='primary'):
+                    c1.write(f'데이터셋의 이름: {ds_name}')
                     id01_01_01(uploaded_file, str(ds_name) if ds_name != '' else uploaded_file.name)
             col, row = df.shape
             st.write(f'데이터셋의 크기: {col}열, {row}행')
@@ -25,8 +26,8 @@ def createPage():
         else:
             st.info('☝️ 파일을 업로드하세요')
     with t2:
-        container = st.container()
-        # container = st.container(border=True)
+        # container = st.container()
+        container = st.container(border=True)
         container.subheader('지금까지 업로드된 데이터셋 목록')
         # ds_list = open('./dataset_list.txt','r')
         # lines = ds_list.readlines()

@@ -1,8 +1,18 @@
 import streamlit as st
+import subprocess
+import os
+import yaml
 from streamlit_option_menu import option_menu
 from views import ex1, ex2, ex4, ex5, ex6, ex7
 
 st.set_page_config(layout="wide")
+
+for i in os.listdir('model_config'):
+  with open(f'model_config/{i}/config.yaml', encoding='utf8') as f:
+    d = yaml.load(f, Loader=yaml.FullLoader)
+    if d['상태'] == '대기중':
+      print('go', i)
+      kk = subprocess.Popen(['python', 'train.py', '-project_id', i])
 
 with st.sidebar:
     st.image('photo_2024-09-20_16-27-37.jpg')

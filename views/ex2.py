@@ -6,10 +6,9 @@ from utils import id03_01_01, id01_03_01
 
 def createPage():
     st.header('학습 모델 조회')
-    container = st.container()
-    # container = st.container(border=True)
+    # container = st.container()
+    container = st.container(border=True)
     datas= id03_01_01()
-    print(datas)
     c1, c2, c3 = container.columns(3)
     with c1:
         st.text_input('데이터셋명')
@@ -28,8 +27,8 @@ def createPage():
         ex3.createPage()
         
     st.subheader('학습 모델 목록')
-    container2 = st.container()
-    # container2 = st.container(border=True)
+    # container2 = st.container()
+    container2 = st.container(border=True)
     # c4, c5, c6, c7, c8, c9, c10, c11, c12 = container2.columns(9)
     # popup_button = st.button('상세 팝업')
     df = pd.DataFrame(

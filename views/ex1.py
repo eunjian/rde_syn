@@ -12,8 +12,8 @@ from utils import (
 
 def createPage():
     st.header('학습 모델 설계')
-    model_container = st.container()
-    # model_container = st.container(border=True)
+    # model_container = st.container()
+    model_container = st.container(border=True)
     c1, c2, c3 = model_container.columns([0.5, 0.5, 0.1])
 
     #
@@ -82,24 +82,24 @@ def createPage():
             data_path = {data['ID']: data['데이터경로'] for data in DATA_LIST}[ds_id] 
             data = pd.read_csv(data_path)
             return list(data.columns)
-        cols = read_data(ds_name)
         ########################
         ########################
-        float_cols, category_cols = list(), list()
-        integer_cols = st.multiselect("정수 형식 컬럼", [col for col in cols if col not in float_cols + category_cols])
-        float_cols = st.multiselect("실수 형식 컬럼", [col for col in cols if col not in integer_cols + category_cols])
-        category_cols = st.multiselect("카테고리 형식 컬럼", [col for col in cols if col not in integer_cols + float_cols])
+        try:
+            cols = read_data(ds_name)
+            float_cols, category_cols = list(), list()
+            integer_cols = st.multiselect("정수 형식 컬럼", [col for col in cols if col not in float_cols + category_cols])
+            float_cols = st.multiselect("실수 형식 컬럼", [col for col in cols if col not in integer_cols + category_cols])
+            category_cols = st.multiselect("카테고리 형식 컬럼", [col for col in cols if col not in integer_cols + float_cols])
+        except:
+            pass
 
     submit_clicked = st.button('학습', type='primary')
     
     
     if submit_clicked:
-        if set(cols) - set(integer_cols) - set(float_cols) - set(category_cols) != set():
+        # if set(cols) - set(integer_cols) - set(float_cols) - set(category_cols) != set():
+        if False:
             st.warning('컬럼타입 미지정', icon="⚠️")
-        elif preprocess_name == '':
-            st.warning('전처리 미지정', icon="⚠️")
-        elif postprocess_name == '':
-            st.warning('후처리 미지정', icon="⚠️")
         else:
             id03_01_02(
                 model_name, # 학습명

@@ -34,8 +34,8 @@ def createPage():
     if submit:
         id04_01_02(selects, name)
     
-    container = st.container()
-    # container = st.container(border=True)
+    # container = st.container()
+    container = st.container(border=True)
     container.subheader('저장된 후처리 리스트')
     # postprocess_list = open('./postprocess_list.txt','r')
     # lines = postprocess_list.readlines()

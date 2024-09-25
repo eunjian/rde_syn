@@ -2,12 +2,11 @@ import yaml
 import random
 import glob
 import os
-import sys
-import shutil
 import pandas as pd
+from synthpop import Synthpop
+from process.op_rules import *
 from process.preprocess import Preprocess
 from process.postprocess import Postprocess
-from synthpop import Synthpop
 
 # __init__
 CURRENT_PATH = os.curdir + '/'
@@ -182,7 +181,7 @@ def id03_01_02(
         start_time:str='-',
         end_time:str='-',
         accuracy:str='-',
-        status:str='등록완료',
+        status:str='대기중',
     ):
     while True:
         folder_name = randstrings()
@@ -302,7 +301,6 @@ def id05_01_03(
 def id05_01_04(
     change_config_dict:dict,
 ):
-    
     pass
 
 # 프로젝트 삭제
@@ -313,30 +311,48 @@ def id05_02_01():
     pass
 
 # 전처리 수행
+# def id05_03_01(
+#     original_data_id:str,
+#     preprocess_id:str,
+#     project_id:str,
+# ):
+#     with open(os.path.join(ORIGINAL_PATH, original_data_id, 'config.yaml')) as file:
+#         data = yaml.load(file, Loader=yaml.FullLoader)
+#         original_data_path = data['데이터경로']
+#     with open(os.path.join(PREPROCESS_PATH, preprocess_id + '.yaml')) as file:
+#         preprocess_config = yaml.load(file, Loader=yaml.FullLoader)
+#     preprocess = Preprocess(
+#         original_data_path = original_data_path,
+#         f_rate_path = F_INFO_PATH,
+#         dict_cart_items_path = CART_TYPE_PATH,
+#         meta_path=META_PATH
+#     )
+#     preprocess.C_PRE_001()
+#     preprocess.C_PRE_002(sort_by_cols=['자산총계', '설립일자', '소유건축물실거래가합계', '소유건축물건수'], key_cols=['기준년월', '가명식별자'], df_sorted_path=df_sorted_path)
+#     preprocess.C_PRE_003(date_key_col='기준년월', df_real_unique_path=df_real_unique_path, df_ordernum_bsdt_path=df_ordernum_bsdt_path)
+#     preprocess.C_PRE_004(date_cols=date_col_list)
+#     preprocess.C_PRE_005(start_date_col = '상장일자', end_date_col = '상장폐지일자')
+#     preprocess.C_PRE_007(nan_categorical_cols = ['주소지시군구'])
+#     df_train = preprocess.C_PRE_008()
+#     df_train.to_csv(PROJECT_PATH + '/' + project_id + '/' + 'preprocessed_data' + '/' + project_id + '.csv', index=False)
+# 전처리 수행
 def id05_03_01(
     original_data_id:str,
     preprocess_id:str,
     project_id:str,
 ):
-    with open(os.path.join(ORIGINAL_PATH, original_data_id, 'config.yaml')) as file:
-        data = yaml.load(file, Loader=yaml.FullLoader)
-        original_data_path = data['데이터경로']
-    with open(os.path.join(PREPROCESS_PATH, preprocess_id + '.yaml')) as file:
-        preprocess_config = yaml.load(file, Loader=yaml.FullLoader)
-    preprocess = Preprocess(
-        original_data_path = original_data_path,
-        f_rate_path = F_INFO_PATH,
-        dict_cart_items_path = CART_TYPE_PATH,
-        meta_path=META_PATH
-    )
-    preprocess.C_PRE_001()
-    preprocess.C_PRE_002(sort_by_cols=['자산총계', '설립일자', '소유건축물실거래가합계', '소유건축물건수'], key_cols=['기준년월', '가명식별자'], df_sorted_path=df_sorted_path)
-    preprocess.C_PRE_003(date_key_col='기준년월', df_real_unique_path=df_real_unique_path, df_ordernum_bsdt_path=df_ordernum_bsdt_path)
-    preprocess.C_PRE_004(date_cols=date_col_list)
-    preprocess.C_PRE_005(start_date_col = '상장일자', end_date_col = '상장폐지일자')
-    preprocess.C_PRE_007(nan_categorical_cols = ['주소지시군구'])
-    df_train = preprocess.C_PRE_008()
-    df_train.to_csv(PROJECT_PATH + '/' + project_id + '/' + 'preprocessed_data' + '/' + project_id + '.csv', index=False)
+    # preprocess = Preprocess(original_data_path = original_path, f_rate_path = f_info_path, dict_cart_items_path = cart_types_path, meta_path=meta_path)
+
+    # preprocess.convert_eng_code_to_kor_code()
+    # preprocess.C_PRE_001()
+    # preprocess.C_PRE_002(sort_by_cols=['자산총계', '설립일자', '소유건축물실거래가합계', '소유건축물건수'], key_cols=['기준년월', '가명식별자'], df_sorted_path=df_sorted_path)
+    # preprocess.C_PRE_003(date_key_col='기준년월', df_real_unique_path=df_real_unique_path, df_ordernum_bsdt_path=df_ordernum_bsdt_path)
+    # preprocess.C_PRE_004(date_cols=date_col_list)
+    # preprocess.C_PRE_005(start_date_col = '상장일자', end_date_col = '상장폐지일자')
+    # preprocess.C_PRE_006()
+    # preprocess.C_PRE_007(nan_categorical_cols = ['주소지시군구'])
+    # df_train = preprocess.C_PRE_008(df_train_path = df_train_path)
+    pass
     
 # 학습, 합성 수행
 def id05_04_01(
@@ -344,17 +360,18 @@ def id05_04_01(
     model_id:str,
     generate_length:int,
 ):
-    cart = Synthpop()
-    with open(PROJECT_PATH + '/' + project_id + '/' + 'config.yaml') as file:
-        data = yaml.load(file, Loader=yaml.FullLoader)
-    df_train = pd.read_csv(PROJECT_PATH + '/' + project_id + '/' + 'preprocessed_data' + '/' + project_id + '.csv')
-    try:
-        cart.fit(df_train)
-    except:
-        return 'preprocessing First'
-    df_generated = cart.generate()
-    df_generated.to_csv(PROJECT_PATH + '/' + project_id + '/' + 'generated_data' + '/' + project_id + '.csv', index=False)
-    return False
+    # cart = Synthpop()
+    # with open(PROJECT_PATH + '/' + project_id + '/' + 'config.yaml') as file:
+    #     data = yaml.load(file, Loader=yaml.FullLoader)
+    # df_train = pd.read_csv(PROJECT_PATH + '/' + project_id + '/' + 'preprocessed_data' + '/' + project_id + '.csv')
+    # try:
+    #     cart.fit(df_train)
+    # except:
+    #     return 'preprocessing First'
+    # df_generated = cart.generate()
+    # df_generated.to_csv(PROJECT_PATH + '/' + project_id + '/' + 'generated_data' + '/' + project_id + '.csv', index=False)
+    # return False
+    pass
 
 # 학습 중단
 def id05_04_02(
@@ -367,13 +384,14 @@ def id05_05_01(
     project_id:str,
     postprocess_id:str,
 ):
-    postprocess = Postprocess(synthetic_data_path=df_fake_unique_post_op_path, df_ordernum_bsdt_path=df_ordernum_bsdt_path,
-                          f_rate_path=f_info_path, meta_path=meta_path)
-    postprocess.C_POST_003(start_date_col='상장일자', end_date_col='상장폐지일자')
-    postprocess.C_POST_004(date_cols=['설립일자', '상장일자', '상장폐지일자'])
-    postprocess.C_POST_005(nan_categorical_cols=['주소지시군구'])
-    postprocess.C_POST_006()
-    postprocess.C_POST_007()
+    # postprocess = Postprocess(synthetic_data_path=df_fake_unique_post_op_path, df_ordernum_bsdt_path=df_ordernum_bsdt_path,
+    #                       f_rate_path=f_info_path, meta_path=meta_path)
+    # postprocess.C_POST_003(start_date_col='상장일자', end_date_col='상장폐지일자')
+    # postprocess.C_POST_004(date_cols=['설립일자', '상장일자', '상장폐지일자'])
+    # postprocess.C_POST_005(nan_categorical_cols=['주소지시군구'])
+    # postprocess.C_POST_006()
+    # postprocess.C_POST_007()
+    pass
     
     
 
@@ -381,13 +399,14 @@ def id05_05_01(
 def id05_06_01(
     project_id:str,
 ):
-    with open(PROJECT_PATH + '/' + project_id + '/' + 'config.yaml') as file:
-        data = yaml.load(file, Loader=yaml.FullLoader)
-    if data['상태'] != '완료':
-        return False
-    with open(PROJECT_PATH + '/' + project_id + '/' + 'metrics') as file:
-        metrics = file.read()
-    return metrics
+    # with open(PROJECT_PATH + '/' + project_id + '/' + 'config.yaml') as file:
+    #     data = yaml.load(file, Loader=yaml.FullLoader)
+    # if data['상태'] != '완료':
+    #     return False
+    # with open(PROJECT_PATH + '/' + project_id + '/' + 'metrics') as file:
+    #     metrics = file.read()
+    # return metrics
+    pass
 
 # 시각화자료 출력
 def id05_06_02():

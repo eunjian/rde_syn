@@ -1,6 +1,11 @@
 import pandas as pd
 import numpy as np
 import json
+from process.op_rules import (
+    C_PRE_OP_001, C_PRE_OP_002, C_PRE_OP_003, C_PRE_OP_004,
+    C_PRE_OP_005, C_PRE_OP_006, C_PRE_OP_007, C_PRE_OP_008,
+    C_PRE_OP_009
+)
 
 def change_f(f_json, data):
     """
@@ -48,21 +53,16 @@ class Preprocess():
     meta_path : str
         기업 CB 실제 데이터 형식, 영문코드 저장한 json 경로.
     """
-    def __init__(self, original_data_path=None, f_rate_path='meta/convert_f_rates.json', dict_cart_items_path='meta/cart_types.json',
+    def __init__(self, original_data_path=None, f_rate_path='meta/convert_f_rates.json',
                  meta_path='meta/meta_기업CB.json'):
         self.df_original = pd.read_csv(original_data_path)
         self.col_sort_list = self.df_original.columns.to_list()
         with open(f_rate_path, "r") as f:
             self.f_info = json.load(f)
             f.close()
-        with open(dict_cart_items_path) as f:
-            self.dict_cart_items = json.load(f)
-            f.close()
         with open(meta_path) as f:
             self.meta_items = json.load(f)
             f.close()
-        for col in self.f_info:
-            self.dict_cart_items[col] = 'category'
         super().__init__()
     
     def convert_eng_code_to_kor_code(self):
@@ -85,7 +85,7 @@ class Preprocess():
     
     # sort_orig_data
     def C_PRE_002(self, sort_by_cols=['자산총계','설립일자','소유건축물실거래가합계','소유건축물건수'],
-                  key_cols=['기준년월', '가명식별자'], df_sorted_path='output/df_sorted.csv'):
+                  key_cols=['기준년월', '가명식별자']):
         """
         데이터 정렬 및 동일한 회사 그룹화
         
@@ -100,11 +100,10 @@ class Preprocess():
             sorting 완료데이터 저장 위치.
         """
         self.df_sorted = self.df_original_f.sort_values(by = sort_by_cols, ascending = False)
-        self.df_sorted.to_csv(df_sorted_path, index = False, encoding = 'utf-8-sig')
         self.bins = (self.df_sorted.drop(columns = key_cols).duplicated() == False).to_numpy()
     
     # sorted_data_to_unique_data
-    def C_PRE_003(self, date_key_col='기준년월', df_real_unique_path='output/df_real_unique.csv',
+    def C_PRE_003(self, date_key_col='기준년월',
                   df_ordernum_bsdt_path='output/df_ordernum_bsdt.csv'):
         """
         그룹화 적용한 데이터 중복 제거
@@ -120,7 +119,6 @@ class Preprocess():
         """
         self.df_real_unique = self.df_sorted[self.bins].iloc[:, 2:]
         self.df_ordernum_BSDT = pd.concat([pd.DataFrame(self.bins.cumsum(), columns = ['order_num']), self.df_sorted.reset_index()[date_key_col]], axis = 1)
-        self.df_real_unique.to_csv(df_real_unique_path, index = False, encoding = 'utf-8-sig')
         self.df_ordernum_BSDT.to_csv(df_ordernum_bsdt_path, index = False, encoding = 'utf-8-sig')
     
     # date_to_year
@@ -152,6 +150,22 @@ class Preprocess():
         start_date_col_notnan = self.df_real_unique[self.df_real_unique[end_date_col].isna() == False][start_date_col]
         self.df_real_unique[self.df_real_unique[end_date_col].isna() == False][end_date_col] = end_date_col_notnan - start_date_col_notnan
     
+    # pre_calculate
+    def C_PRE_006(self):
+        """
+        산출항목을 계산하기 위한 요소 중 누락된 컬럼을 추가.
+        """
+        self.df_train = self.df_real_unique.copy()
+        self.df_train = C_PRE_OP_001(self.df_train)
+        self.df_train = C_PRE_OP_002(self.df_train)
+        self.df_train = C_PRE_OP_003(self.df_train)
+        self.df_train = C_PRE_OP_004(self.df_train)
+        self.df_train = C_PRE_OP_005(self.df_train)
+        self.df_train = C_PRE_OP_006(self.df_train)
+        self.df_train = C_PRE_OP_007(self.df_train)
+        self.df_train = C_PRE_OP_008(self.df_train)
+        self.df_train = C_PRE_OP_009(self.df_train)
+    
     # fill_na_categorical_col
     def C_PRE_007(self, nan_categorical_cols=['주소지시군구']):
         """
@@ -165,22 +179,3 @@ class Preprocess():
         for col in nan_categorical_cols:
             assert (self.df_train[col] == '-').sum() == 0, f"checking symbol of {col}"
             self.df_train[col] = self.df_train[col].replace(np.nan, '-').map(lambda x : str(x))
-
-    # prepare_train_data    
-    def C_PRE_008(self):
-        """
-        학습에 필요한 데이터만 추출 및 학습 순번으로 정렬.
-        데이터 타입 지정
-        
-        Parameters
-        ----------
-        df_train_path : str
-            학습용 데이터 저장 위치.
-        """
-        self.df_train = self.df_train[list(self.dict_cart_items.keys())]
-        
-        # cart_type_to_categorical_dict = {col : 'category' for col in self.f_info}
-        cart_type_to_categorical_dict = {col : dtype for col, dtype in self.dict_cart_items.items() if dtype == 'category'}
-        
-        self.df_train = self.df_train.astype(cart_type_to_categorical_dict)
-        return self.df_train
